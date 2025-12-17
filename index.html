@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>wosdaX • Bio</title>
+
+  <style>
+    :root{
+      --glass: rgba(10,12,18,.62);
+      --stroke: rgba(255,255,255,.12);
+      --txt: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.62);
+      --shadow: 0 26px 110px rgba(0,0,0,.78);
+      --r: 24px;
+
+      --a1:#00ff9a;
+      --a2:#00d2ff;
+      --a3:#ff2bd6;
+      --a4:#ffd36a;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      overflow:hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--txt);
+      background:#05070b;
+    }
+
+    /* ===== BACKGROUND PHOTO ===== */
+    .bg{
+      position:fixed; inset:0;
+      background:
+        linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.86)),
+        url("siber.jpg") center/cover no-repeat;
+      z-index:0;
+      filter: contrast(1.08) saturate(1.06);
+      transform: scale(1.02);
+    }
+
+    /* ===== LIGHT GLITCH (subtle) ===== */
+    .glitchWrap{
+      position:fixed; inset:0;
+      z-index:1;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .glitchLayer{
+      position:absolute; inset:-2%;
+      background:
+        linear-gradient(rgba(0,0,0,.28), rgba(0,0,0,.28)),
+        url("siber.jpg") center/cover no-repeat;
+      mix-blend-mode: screen;
+      opacity: .06;         /* glitch şiddeti */
+      filter: saturate(1.25) contrast(1.2);
+      animation: glitchMove 3.7s infinite steps(8);
+      transform: translate(0,0);
+    }
+    .glitchLayer.g2{
+      opacity:.045;         /* ikinci katman daha hafif */
+      filter: hue-rotate(20deg) saturate(1.2) contrast(1.15);
+      animation-duration: 4.6s;
+    }
+
+    @keyframes glitchMove{
+      0%   { transform: translate(0,0) }
+      8%   { transform: translate(-6px, 2px) }
+      14%  { transform: translate(5px, -3px) }
+      22%  { transform: translate(-3px, 4px) }
+      30%  { transform: translate(7px, 0px) }
+      45%  { transform: translate(-5px, -2px) }
+      60%  { transform: translate(3px, 3px) }
+      75%  { transform: translate(-2px, -4px) }
+      100% { transform: translate(0,0) }
+    }
+
+    /* scanlines */
+    .scanlines{
+      position:fixed; inset:0;
+      z-index:2;
+      pointer-events:none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.02),
+        rgba(255,255,255,.02) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: overlay;
+      opacity:.18;
+    }
+
+    /* noise/grain */
+    .grain{
+      position:fixed; inset:-40%;
+      z-index:2;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='340' height='340' filter='url(%23n)' opacity='.30'/%3E%3C/svg%3E");
+      opacity:.16;
+      mix-blend-mode:overlay;
+      animation: grainMove 9s steps(8) infinite;
+    }
+    @keyframes grainMove{
+      0%{ transform:translate(0,0) }
+      20%{ transform:translate(-6%, 3%) }
+      40%{ transform:translate(4%, -6%) }
+      60%{ transform:translate(-7%, -3%) }
+      80%{ transform:translate(6%, 5%) }
+      100%{ transform:translate(0,0) }
+    }
+
+    /* vignette */
+    .vignette{
+      position:fixed; inset:0;
+      z-index:3;
+      pointer-events:none;
+      background: radial-gradient(1100px 800px at 50% 40%,
+        rgba(0,0,0,.08),
+        rgba(0,0,0,.70) 65%,
+        rgba(0,0,0,.86) 100%);
+    }
+
+    /* ===== layout ===== */
+    .wrap{
+      position:relative;
+      z-index:4;
+      height:100%;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    /* ===== CARD + NEON FRAME ===== */
+    .card{
+      width:min(440px, 92vw);
+      border-radius: var(--r);
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow:hidden;
+      position:relative;
+      transform: translateY(14px) scale(.98);
+      opacity:0;
+      animation: intro .85s cubic-bezier(.2,.85,.2,1) forwards;
+      will-change: transform;
+    }
+    @keyframes intro{ to{ transform: translateY(0) scale(1); opacity:1; } }
+
+    /* neon frame */
+    .card::before{
+      content:"";
+      position:absolute; inset:-3px;
+      background: conic-gradient(from 180deg,
+        rgba(0,255,154,.62),
+        rgba(0,210,255,.52),
+        rgba(255,43,214,.48),
+        rgba(255,211,106,.28),
+        rgba(0,255,154,.62)
+      );
+      filter: blur(16px);
+      opacity:.36;
+      animation: spin 6.2s linear infinite;
+      pointer-events:none;
+    }
+    .card::after{
+      content:"";
+      position:absolute; inset:1px;
+      border-radius: calc(var(--r) - 2px);
+      background: linear-gradient(180deg, rgba(10,12,18,.74), rgba(10,12,18,.56));
+      pointer-events:none;
+    }
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+
+    .inner{
+      position:relative;
+      z-index:2;
+      padding:20px 20px 16px;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    /* small avatar “badge” */
+    .avatar{
+      width:74px; height:74px;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: 0 12px 35px rgba(0,0,0,.45);
+      background: rgba(0,0,0,.25);
+      flex:0 0 auto;
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+    .avatar img{
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+      transform: scale(1.03);
+    }
+    .avatar::after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(120deg, rgba(0,255,154,.16), transparent 55%),
+        linear-gradient(240deg, rgba(255,43,214,.12), transparent 55%);
+      mix-blend-mode: screen;
+      pointer-events:none;
+    }
+
+    /* NAME (no glitch, color cycling, bold) */
+    .name{
+      margin:0;
+      font-weight: 950;
+      font-size: 28px;
+      letter-spacing: .2px;
+      line-height:1.1;
+      background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3), var(--a4), var(--a1));
+      background-size: 320% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: hue 4.4s linear infinite;
+      text-shadow: 0 10px 35px rgba(0,0,0,.35);
+    }
+    @keyframes hue{
+      0%{ background-position: 0% 50%; }
+      100%{ background-position: 100% 50%; }
+    }
+
+    .sub{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:600;
+    }
+
+    .bio{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .row{
+      margin-top: 14px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.9);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
+    .btn:active{ transform: translateY(0); }
+
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
+      box-shadow: 0 0 18px rgba(0,255,154,.35);
+    }
+
+    .icons{
+      display:flex;
+      gap:10px;
+      margin-left:auto;
+    }
+    .iconlink{
+      width:42px; height:42px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.12);
+      display:grid;
+      place-items:center;
+      text-decoration:none;
+      color: rgba(255,255,255,.92);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .iconlink:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
+    .icon{ position:relative; z-index:1; font-size:18px; }
+
+    .bar{
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .tag{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      font-size:12px;
+      color: rgba(255,255,255,.75);
+      white-space:nowrap;
+    }
+    .barText{ min-width:0; flex:1; }
+    .barText b{ display:block; font-size:13px; }
+    .barText span{ display:block; font-size:12px; color: rgba(255,255,255,.60); margin-top:2px; }
+
+    .equalizer{
+      width:34px; height:20px;
+      display:flex; gap:3px; align-items:flex-end;
+      opacity:.9;
+    }
+    .eq{
+      width:4px; height:6px; border-radius:6px;
+      background: linear-gradient(180deg, var(--a1), var(--a3));
+      animation: eq 1.2s ease-in-out infinite;
+      transform-origin: bottom;
+    }
+    .eq:nth-child(2){ animation-delay:.15s }
+    .eq:nth-child(3){ animation-delay:.30s }
+    .eq:nth-child(4){ animation-delay:.45s }
+    .eq:nth-child(5){ animation-delay:.60s }
+    @keyframes eq{
+      0%,100%{ height: 6px; opacity:.55 }
+      50%{ height: 18px; opacity:1 }
+    }
+    .paused .eq{ animation-play-state: paused; opacity:.35; }
+
+    .foot{
+      margin-top: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* tilt */
+    .tilt{ will-change: transform; }
+    @media (max-width:420px){
+      .icons{ margin-left:0; }
+      .row{ justify-content:space-between; }
+    }
+
+    /* optional: reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .glitchLayer, .grid, .dots, .grain, .card::before { animation: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg"></div>
+
+  <!-- subtle glitch layers -->
+  <div class="glitchWrap">
+    <div class="glitchLayer g1"></div>
+    <div class="glitchLayer g2"></div>
+  </div>
+
+  <div class="scanlines"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+
+  <div class="wrap">
+    <div class="card tilt" id="card">
+      <div class="inner">
+        <div class="top">
+          <!-- Avatar istemiyorsan bu img'i silebilirsin -->
+          <div class="avatar">
+            <img src="avatar.png" alt="avatar">
+          </div>
+          <div>
+            <h1 class="name">wosdaX</h1>
+            <div class="sub">Kralından Yemez ~</div>
+          </div>
+        </div>
+
+        <div class="bio">
+           <b></b> 
+        </div>
+
+        <div class="row">
+          <button class="btn" id="musicBtn" type="button">
+            <span class="dot"></span>
+            <span id="musicLabel">Müziği Başlat</span>
+          </button>
+
+          <div class="icons">
+            <a class="iconlink" href="https://instagram.com/wosdaxphp" target="_blank" rel="noreferrer" title="Instagram">
+              <img src="instagram.png" alt="Instagram" width="30" height="30" style="display:block;">
+
+            </a>
+            <a class="iconlink" href="https://www.tiktok.com/@wosdax.php" target="_blank" rel="noreferrer" title="TikTok">
+              <img src="tiktok.png" alt="TikTok" width="40" height="40" style="display:block;">
+
+            </a>
+            <a class="iconlink" href="#" id="copyLink" title="Linki kopyala">
+              <span class="icon">🔗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="bar">
+          <div class="tag">by <b>wosdaX</b></div>
+          <div class="barText">
+            <b id="stateTitle">Müzik kapalı</b>
+            <span id="state"></span>
+          </div>
+          <div class="equalizer paused" id="eq">
+            <div class="eq"></div><div class="eq"></div><div class="eq"></div><div class="eq"></div><div class="eq"></div>
+          </div>
+        </div>
+
+        <div class="foot">
+          <div class="tag">Instagram: <b>wosdaxphp</b></div>
+          <div class="tag">TikTok: <b>wosdax.php</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- music.mp3 aynı klasörde -->
+  <audio id="audio" preload="auto" loop src="music.mp3"></audio>
+
+  <script>
+    // MUSIC
+    const audio = document.getElementById("audio");
+    const musicBtn = document.getElementById("musicBtn");
+    const musicLabel = document.getElementById("musicLabel");
+    const stateTitle = document.getElementById("stateTitle");
+    const state = document.getElementById("state");
+    const eq = document.getElementById("eq");
+
+    let playing = false;
+    async function toggleMusic(){
+      try{
+        if(!playing){
+          await audio.play();
+          playing = true;
+          musicLabel.textContent = "Müziği Durdur";
+          stateTitle.textContent = "Müzik açık";
+          state.textContent = "";
+          eq.classList.remove("paused");
+        }else{
+          audio.pause();
+          playing = false;
+          musicLabel.textContent = "Müziği Başlat";
+          stateTitle.textContent = "Müzik kapalı";
+          state.textContent = "";
+          eq.classList.add("paused");
+        }
+      }catch(e){
+        alert("music.mp3 bulunamadı/çalınamadı. index.html ile aynı klasörde olmalı.");
+      }
+    }
+    musicBtn.addEventListener("click", toggleMusic);
+
+    // COPY LINK
+    document.getElementById("copyLink").addEventListener("click", async (e)=>{
+      e.preventDefault();
+      try{
+        await navigator.clipboard.writeText(location.href);
+        stateTitle.textContent = "Link kopyalandı ✓";
+        setTimeout(()=> stateTitle.textContent = playing ? "Müzik açık" : "Müzik kapalı", 1200);
+      }catch{
+        prompt("Manuel kopyala:", location.href);
+      }
+    });
+
+    // CARD TILT
+    const card = document.getElementById("card");
+    let rect = null;
+    const clamp = (v,min,max)=>Math.max(min, Math.min(max,v));
+
+    window.addEventListener("mousemove",(e)=>{
+      rect = rect || card.getBoundingClientRect();
+      const px = (e.clientX - rect.left)/rect.width;
+      const py = (e.clientY - rect.top)/rect.height;
+      const rx = clamp((0.5 - py) * 10, -8, 8);
+      const ry = clamp((px - 0.5) * 14, -10, 10);
+      card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    window.addEventListener("mouseleave", ()=>{
+      card.style.transform = `perspective(900px) rotateX(0deg) rotateY(0deg)`;
+      rect = null;
+    });
+    window.addEventListener("resize", ()=> rect=null);
+  </script>
+</body>
+</html>
